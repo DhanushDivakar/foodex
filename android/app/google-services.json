@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "437533982402",
+    "project_id": "foodex-ff589",
+    "storage_bucket": "foodex-ff589.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437533982402:android:de1bf26f87e0ea3d5a055b",
+        "android_client_info": {
+          "package_name": "com.royalmart.foodex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437533982402-6n2kqehjqiq4kj1hcaqj3qdam779tpof.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.royalmart.foodex",
+            "certificate_hash": "7b8824c20410aea157df19092446e77612456cb8"
+          }
+        },
+        {
+          "client_id": "437533982402-1p3p2bseq4vbrn072kno5350j1dat6m1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXtDh88lIGohCmJoWfFMEysSmBmtkX3lA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "437533982402-1p3p2bseq4vbrn072kno5350j1dat6m1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
