@@ -4,6 +4,7 @@ import 'package:foodex/bloc/auth_cubit.dart';
 import 'package:foodex/screens/sign_in_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  
   const HomeScreen({super.key});
 
   @override

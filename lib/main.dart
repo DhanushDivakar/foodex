@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
 import 'package:foodex/bloc/auth_state.dart';
+import 'package:foodex/bloc/camera_bloc/camera_bloc_bloc.dart';
 import 'package:foodex/screens/home_screen.dart';
 import 'package:foodex/screens/sign_in_screen.dart';
 
@@ -18,13 +19,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CameraCubit(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.indigo,
         ),
         home: BlocBuilder<AuthCubit, AuthState>(
           buildWhen: (previous, current) {
