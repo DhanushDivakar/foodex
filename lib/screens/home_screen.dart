@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
+import 'package:foodex/bloc/camera_bloc/camera_bloc_bloc.dart';
 import 'package:foodex/screens/sign_in_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomeScreen extends StatelessWidget {
-  
   const HomeScreen({super.key});
 
   @override
@@ -62,6 +65,42 @@ class HomeScreen extends StatelessWidget {
             // },
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: BlocConsumer<CameraCubit, String?>(
+          listener: (context, state) {
+            final imageCubit = BlocProvider.of<CameraCubit>(context);
+            if (state == null) {
+              const SnackBar(
+                content: Text('Error'),
+              );
+              imageCubit.resetImage();
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                if (state != null && state.isNotEmpty) Image.file(File(state)),
+                ElevatedButton(
+                  onPressed: () {
+                    BlocProvider.of<CameraCubit>(context)
+                        .getImage(ImageSource.camera);
+                  },
+                  child: const Text('Camera'),
+                ),
+
+                ElevatedButton(
+                  onPressed: () {
+                    BlocProvider.of<CameraCubit>(context)
+                        .getImage(ImageSource.gallery);
+                  },
+                  child: const Text('Gallery'),
+                ),
+                // Image.file(File(state!)),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
