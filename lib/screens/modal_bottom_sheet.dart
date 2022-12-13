@@ -114,36 +114,46 @@ class ShowModalSheet extends StatelessWidget {
                         return ElevatedButton(
                           onPressed: () {
                             try {
-                              print('accessing');
+                              // print('accessing');
                               if (state.toString().isNotEmpty) {
                                 BlocProvider.of<LocationCubit>(context)
                                     .getCurrentPosition();
-                                print('hi');
+
+                                final image =
+                                    BlocProvider.of<CameraCubit>(context).state;
+                                if (image!.isEmpty) {
+                                  print('empty');
+                                } else {
+                                  print('not empty');
+                                }
+                                //print(image! + 'cool');
+
+                                // print('hi');
                                 if (state is LocationDenied) {
-                                  print('denied');
+                                  // print('denied');
                                 }
                               } else {
-                                print('error');
+                                //print('error');
                               }
                             } catch (error) {
                               print('error');
-                              showDialog(
-                                  context: context,
-                                  builder: (ctx) {
-                                    return AlertDialog(
-                                      title: const Text('Error'),
-                                      content:
-                                          const Text('Something went wrong'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Ok'),
-                                        ),
-                                      ],
-                                    );
-                                  });
+                              //  showDialog(
+                              //     context: context,
+                              //     builder: (ctx) {
+                              //       return AlertDialog(
+                              //         title: const Text('Error'),
+                              //         content:
+                              //             const Text('Something went wrong'),
+                              //         actions: <Widget>[
+                              //           TextButton(
+                              //             onPressed: () {
+                              //               Navigator.pop(context);
+                              //             },
+                              //             child: const Text('Ok'),
+                              //           ),
+                              //         ],
+                              //       );
+                              //     });
                             }
                           },
                           child: const Text('Submit'),
