@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../bloc/camera_bloc/camera_bloc_bloc.dart';
@@ -108,9 +109,46 @@ class ShowModalSheet extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Submit'),
+                    BlocBuilder<LocationCubit, LocationState>(
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            try {
+                              print('accessing');
+                              if (state.toString().isNotEmpty) {
+                                BlocProvider.of<LocationCubit>(context)
+                                    .getCurrentPosition();
+                                print('hi');
+                                if (state is LocationDenied) {
+                                  print('denied');
+                                }
+                              } else {
+                                print('error');
+                              }
+                            } catch (error) {
+                              print('error');
+                              showDialog(
+                                  context: context,
+                                  builder: (ctx) {
+                                    return AlertDialog(
+                                      title: const Text('Error'),
+                                      content:
+                                          const Text('Something went wrong'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            }
+                          },
+                          child: const Text('Submit'),
+                        );
+                      },
                     ),
                   ],
                 ),
