@@ -78,26 +78,29 @@ class HomeScreen extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            return Column(
-              children: [
-                if (state != null && state.isNotEmpty) Image.file(File(state)),
-                ElevatedButton(
-                  onPressed: () {
-                    BlocProvider.of<CameraCubit>(context)
-                        .getImage(ImageSource.camera);
-                  },
-                  child: const Text('Camera'),
-                ),
+            return Center(
+              child: Column(
+                children: [
+                  if (state != null && state.isNotEmpty) Image.file(File(state)),
+                  ElevatedButton(
+                    onPressed: () {
+                      BlocProvider.of<CameraCubit>(context)
+                          .getImage(ImageSource.camera);
+                    },
+                    child: const Text('Camera'),
+                  ),
 
-                ElevatedButton(
-                  onPressed: () {
-                    BlocProvider.of<CameraCubit>(context)
-                        .getImage(ImageSource.gallery);
-                  },
-                  child: const Text('Gallery'),
-                ),
-                // Image.file(File(state!)),
-              ],
+                  ElevatedButton(
+                    onPressed: () {
+                      BlocProvider.of<CameraCubit>(context)
+                          .getImage(ImageSource.gallery);
+                    },
+                    child: const Text('Gallery'),
+                  ),
+                  ElevatedButton(onPressed: (){}, child:const  Text('get location'))
+                  // Image.file(File(state!)),
+                ],
+              ),
             );
           },
         ),
