@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
 import 'package:foodex/bloc/camera_bloc/camera_bloc_bloc.dart';
+import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:foodex/screens/sign_in_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -81,7 +82,8 @@ class HomeScreen extends StatelessWidget {
             return Center(
               child: Column(
                 children: [
-                  if (state != null && state.isNotEmpty) Image.file(File(state)),
+                  if (state != null && state.isNotEmpty)
+                    Image.file(File(state)),
                   ElevatedButton(
                     onPressed: () {
                       BlocProvider.of<CameraCubit>(context)
@@ -97,7 +99,28 @@ class HomeScreen extends StatelessWidget {
                     },
                     child: const Text('Gallery'),
                   ),
-                  ElevatedButton(onPressed: (){}, child:const  Text('get location'))
+
+                  BlocBuilder<LocationCubit, LocationState>(
+                    builder: (context, state) {
+                      return Column(
+                        children: [
+                          if(state is LocationAcessed) Column(
+                            children: [
+                              Text(state.latitude!),
+                               Text(state.longitude!),
+                            ],
+                          ),
+                          if (state is LocationDenied) Text(state.error!),
+                          ElevatedButton(
+                              onPressed: () {
+                                BlocProvider.of<LocationCubit>(context)
+                                    .getCurrentPosition();
+                              },
+                              child: const Text('get location')),
+                        ],
+                      );
+                    },
+                  )
                   // Image.file(File(state!)),
                 ],
               ),

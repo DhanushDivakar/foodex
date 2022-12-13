@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
 import 'package:foodex/bloc/auth_state.dart';
 import 'package:foodex/bloc/camera_bloc/camera_bloc_bloc.dart';
+import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:foodex/screens/home_screen.dart';
 import 'package:foodex/screens/sign_in_screen.dart';
 
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CameraCubit(),
+        ),
+        BlocProvider(
+          create: (context) => LocationCubit(),
         ),
       ],
       child: MaterialApp(
