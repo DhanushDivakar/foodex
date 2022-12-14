@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
+import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:foodex/screens/modal_bottom_sheet.dart';
 
 import 'package:foodex/screens/sign_in_screen.dart';
-
-
-
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -15,10 +13,18 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-   
+    context.read<LocationCubit>().getCurrentPosition();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Foodex'),
+        title:  BlocListener<LocationCubit, LocationState>(
+          listener: (context, state) {
+           if(state is LocationDenied){
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Turn on Location')));
+           }
+          },
+          child: Text('Foodex'),
+        ),
         actions: [
           TextButton(
             onPressed: (() => showDialog(
@@ -92,7 +98,7 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton:const  ShowModalSheet(),
+      floatingActionButton: const ShowModalSheet(),
       // SingleChildScrollView(
       //   child: BlocConsumer<CameraCubit, String?>(
       //     listener: (context, state) {

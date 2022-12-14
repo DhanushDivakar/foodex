@@ -16,9 +16,11 @@ class ShowModalSheet extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
 
     return FloatingActionButton(
       onPressed: () {
+        BlocProvider.of<LocationCubit>(context).getCurrentPosition();
         showModalBottomSheet(
           isScrollControlled: true,
           backgroundColor: Colors.indigo[50],
@@ -27,141 +29,180 @@ class ShowModalSheet extends StatelessWidget {
               borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
           builder: (BuildContext context) {
             return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: Form(
+                key: formKey,
                 child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      BlocConsumer<CameraCubit, String?>(
-                        listener: (context, state) {
-                          final imageCubit =
-                              BlocProvider.of<CameraCubit>(context);
-                          if (state == null) {
-                            const SnackBar(
-                              content: Text('Error'),
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        BlocConsumer<CameraCubit, String?>(
+                          listener: (context, state) {
+                            final imageCubit =
+                                BlocProvider.of<CameraCubit>(context);
+                            if (state == null) {
+                              const SnackBar(
+                                content: Text('Error'),
+                              );
+                              imageCubit.resetImage();
+                            }
+                          },
+                          builder: (context, state) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (state != null && state.isNotEmpty)
+                                  SizedBox(
+                                    height: height * .10,
+                                    width: width * .10,
+                                    child: Image.file(
+                                      File(state),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                TextButton(
+                                  onPressed: () {
+                                    BlocProvider.of<CameraCubit>(context)
+                                        .getImage(ImageSource.camera);
+                                  },
+                                  child: Text(
+                                    'Click a picture',
+                                    style: TextStyle(
+                                      fontSize: height * .025,
+                                    ),
+                                  ),
+                                ),
+                                // Text(
+                                //   'or',
+                                //   style: TextStyle(
+                                //     fontSize: height * .020,
+                                //   ),
+                                // ),
+                                // TextButton(
+                                //   onPressed: () {
+                                //     BlocProvider.of<CameraCubit>(context)
+                                //         .getImage(ImageSource.gallery);
+                                //   },
+                                //   child: Text(
+                                //     'Choose a picture',
+                                //     style: TextStyle(
+                                //       fontSize: height * .025,
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
                             );
-                            imageCubit.resetImage();
-                          }
-                        },
-                        builder: (context, state) {
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              if (state != null && state.isNotEmpty)
-                                SizedBox(
-                                  height: height * .10,
-                                  width: width * .10,
-                                  child: Image.file(
-                                    File(state),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              TextButton(
-                                onPressed: () {
-                                  BlocProvider.of<CameraCubit>(context)
-                                      .getImage(ImageSource.camera);
-                                },
-                                child: Text(
-                                  'Click a picture',
-                                  style: TextStyle(
-                                    fontSize: height * .025,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                'or',
-                                style: TextStyle(
-                                  fontSize: height * .020,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  BlocProvider.of<CameraCubit>(context)
-                                      .getImage(ImageSource.gallery);
-                                },
-                                child: Text(
-                                  'Choose a picture',
-                                  style: TextStyle(
-                                    fontSize: height * .025,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: titleController,
-                        decoration: const InputDecoration(hintText: 'Title'),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      TextField(
-                        controller: descriptionController,
-                        decoration:
-                            const InputDecoration(hintText: 'Description'),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      BlocBuilder<LocationCubit, LocationState>(
-                        builder: (context, state) {
-                          return ElevatedButton(
-                            onPressed: () {
-                              try {
-                                // print('accessing');
-                                if (state.toString().isNotEmpty) {
-                                  BlocProvider.of<LocationCubit>(context)
-                                      .getCurrentPosition();
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Enter the title';
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: titleController,
+                          decoration: const InputDecoration(hintText: 'Title'),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Enter the description';
+                            } else {
+                              return null;
+                            }
+                          },
+                          controller: descriptionController,
+                          decoration:
+                              const InputDecoration(hintText: 'Description'),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        BlocBuilder<LocationCubit, LocationState>(
+                          builder: (context, state) {
+                            if (state is LocationAcessed) {
+                              print(state.latitude);
+                              print(state.longitude);
+                            }
 
-                                  final image =
-                                      BlocProvider.of<CameraCubit>(context).state;
-                                 print(image);
-                                 print("title" + titleController.text);
-                                 print("desc" + descriptionController.text);
+                            return ElevatedButton(
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                final isValid =
+                                    formKey.currentState!.validate();
+                                if (isValid &&
+                                    context.read<CameraCubit>().state != null &&
+                                    state.toString().isNotEmpty) {
+                                  try {
+                                    // print('accessing');
+                                    if (state.toString().isNotEmpty) {
+                                      BlocProvider.of<LocationCubit>(context)
+                                          .getCurrentPosition();
+                                      //  final Location = context.read<LocationCubit>().getCurrentPosition();
+                                      //  print(Location);
 
-                                  //print(image! + 'cool');
+                                      final image =
+                                          BlocProvider.of<CameraCubit>(context)
+                                              .state;
+                                      print(image);
+                                      print("title ${titleController.text}");
+                                      print(
+                                          "desc ${descriptionController.text}");
 
-                                  // print('hi');
-                                  if (state is LocationDenied) {
-                                    // print('denied');
+                                      //print(image! + 'cool');
+
+                                      // print('hi');
+                                      if (state is LocationDenied) {
+                                        // print('denied');
+                                      }
+                                    } else {
+                                      //print('error');
+                                    }
+                                  } catch (error) {
+                                    print('error');
+                                    //  showDialog(
+                                    //     context: context,
+                                    //     builder: (ctx) {
+                                    //       return AlertDialog(
+                                    //         title: const Text('Error'),
+                                    //         content:
+                                    //             const Text('Something went wrong'),
+                                    //         actions: <Widget>[
+                                    //           TextButton(
+                                    //             onPressed: () {
+                                    //               Navigator.pop(context);
+                                    //             },
+                                    //             child: const Text('Ok'),
+                                    //           ),
+                                    //         ],
+                                    //       );
+                                    //     });
                                   }
                                 } else {
-                                  //print('error');
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Something went wrong'),
+                                    ),
+                                  );
                                 }
-                              } catch (error) {
-                                print('error');
-                                //  showDialog(
-                                //     context: context,
-                                //     builder: (ctx) {
-                                //       return AlertDialog(
-                                //         title: const Text('Error'),
-                                //         content:
-                                //             const Text('Something went wrong'),
-                                //         actions: <Widget>[
-                                //           TextButton(
-                                //             onPressed: () {
-                                //               Navigator.pop(context);
-                                //             },
-                                //             child: const Text('Ok'),
-                                //           ),
-                                //         ],
-                                //       );
-                                //     });
-                              }
-                            },
-                            child: const Text('Submit'),
-                          );
-                        },
-                      ),
-                    ],
+                              },
+                              child: const Text('Submit'),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

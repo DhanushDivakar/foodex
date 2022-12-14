@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => CameraCubit(),
         ),
-        BlocProvider(
+        BlocProvider<LocationCubit>(
           create: (context) => LocationCubit(),
         ),
       ],

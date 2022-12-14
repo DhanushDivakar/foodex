@@ -23,6 +23,7 @@ class LocationCubit extends Cubit<LocationState> {
           emit(const LocationDenied('denied'));
         }
       } else if (permission == LocationPermission.deniedForever) {
+         await Geolocator.openLocationSettings();
         emit(const LocationDenied('denied forever'));
       }
       Position currenPosition = await Geolocator.getCurrentPosition(
