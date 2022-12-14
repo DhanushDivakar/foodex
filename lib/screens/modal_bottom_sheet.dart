@@ -149,11 +149,11 @@ class ShowModalSheet extends StatelessWidget {
                         }),
                         BlocBuilder<LocationCubit, LocationState>(
                           builder: (context, state) {
-                            if (state.permission ==
-                                LocationPermission.whileInUse) {
-                              print(state.location.latitude);
-                              print(state.location.longitude);
-                            }
+                            // if (state.permission ==
+                            //     LocationPermission.whileInUse) {
+                            //  // print(state.location.latitude);
+                            //   print(state.location.longitude);
+                            // }
 
                             return ElevatedButton(
                               onPressed: () async {
@@ -173,14 +173,14 @@ class ShowModalSheet extends StatelessWidget {
                                       context.read<CameraCubit>().state;
                                   String fileName = basename(image!);
 
-                                  print(fileName);
+                                  //print(fileName);
                                   FirebaseStorage storage =
                                       FirebaseStorage.instance;
                                   Reference ref =
                                       storage.ref().child('uploads/$fileName');
 
-                                  ref.putFile(File(image));
-                                  final imageUrl = await ref.getDownloadURL();
+                                  await ref.putFile(File(image));
+                                  String imageUrl = await ref.getDownloadURL();
                                   print(imageUrl);
 
                                   // await uploadTask.whenComplete(() async {
@@ -196,18 +196,19 @@ class ShowModalSheet extends StatelessWidget {
                                   final uid =
                                       FirebaseAuth.instance.currentUser!.uid;
                                   await FirebaseFirestore.instance
-                                      .collection('users')
+                                      .collection('user')
                                       .doc(uid)
                                       .set({
                                     'uid': uid,
                                     'image': imageUrl,
                                     'title': titleController.text,
                                     'description': descriptionController.text,
+                                    'time': DateTime.now(),
                                     'locationCoords': GeoPoint(
                                       location.latitude,
                                       location.longitude,
                                     ),
-                                    'time': DateTime.now(),
+                                    
                                     // 'latitude':location.latitude,
                                     // 'logitude': location.longitude,
                                   });
@@ -297,6 +298,7 @@ class ShowModalSheet extends StatelessWidget {
                                 //     ),
                                 //   );
                                 // }
+                                Navigator.pop(context);
                               },
                               child: const Text('Submit'),
                             );
