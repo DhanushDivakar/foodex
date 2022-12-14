@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 
 import '../bloc/camera_bloc/camera_bloc_bloc.dart';
 
@@ -21,7 +25,6 @@ class ShowModalSheet extends StatelessWidget {
 
     return FloatingActionButton(
       onPressed: () {
-        // BlocProvider.of<LocationCubit>(context).getCurrentPosition();
         showModalBottomSheet(
           isScrollControlled: true,
           backgroundColor: Colors.indigo[50],
@@ -152,7 +155,12 @@ class ShowModalSheet extends StatelessWidget {
                             }
 
                             return ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                FocusScope.of(context).unfocus();
+                                if (state.isLoading) {
+                                  const Center(
+                                      child: CircularProgressIndicator());
+                                }
                                 if (formKey.currentState?.validate() == true &&
                                     context.read<CameraCubit>().state != null &&
                                     context
@@ -162,6 +170,23 @@ class ShowModalSheet extends StatelessWidget {
                                         LocationPermission.whileInUse) {
                                   final image =
                                       context.read<CameraCubit>().state;
+                                  String fileName = basename(image!);
+
+                                  print(fileName);
+                                  FirebaseStorage storage =
+                                      FirebaseStorage.instance;
+                                  Reference ref =
+                                      storage.ref().child('uploads/$fileName');
+                                  UploadTask uploadTask =
+                                      ref.putFile(File(image));
+                                  await uploadTask.whenComplete(() async {
+                                    await ref
+                                        .getDownloadURL()
+                                        .then((value) => print(value))
+                                        .onError((error, stackTrace) =>
+                                            print(error));
+                                  });
+
                                   print(image);
                                   final location = context
                                       .read<LocationCubit>()

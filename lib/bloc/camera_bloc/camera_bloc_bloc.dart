@@ -12,7 +12,8 @@ class CameraCubit extends Cubit<String?> {
 
   void getImage(ImageSource fileSource) async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: fileSource);
+    final XFile? pickedFile =
+        await picker.pickImage(source: fileSource, imageQuality: 10);
     if (pickedFile == null) {
       return;
     }
