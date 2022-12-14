@@ -20,7 +20,7 @@ class ShowModalSheet extends StatelessWidget {
 
     return FloatingActionButton(
       onPressed: () {
-        BlocProvider.of<LocationCubit>(context).getCurrentPosition();
+        // BlocProvider.of<LocationCubit>(context).getCurrentPosition();
         showModalBottomSheet(
           isScrollControlled: true,
           backgroundColor: Colors.indigo[50],
@@ -102,13 +102,14 @@ class ShowModalSheet extends StatelessWidget {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value!.isEmpty) {
+                            if (value?.isEmpty == true) {
                               return 'Enter the title';
                             } else {
                               return null;
                             }
                           },
                           controller: titleController,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           decoration: const InputDecoration(hintText: 'Title'),
                         ),
                         const SizedBox(
@@ -116,12 +117,13 @@ class ShowModalSheet extends StatelessWidget {
                         ),
                         TextFormField(
                           validator: (value) {
-                            if (value!.isEmpty) {
+                            if (value?.isEmpty == true) {
                               return 'Enter the description';
                             } else {
                               return null;
                             }
                           },
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: descriptionController,
                           decoration:
                               const InputDecoration(hintText: 'Description'),
@@ -129,6 +131,16 @@ class ShowModalSheet extends StatelessWidget {
                         const SizedBox(
                           height: 20,
                         ),
+                        BlocBuilder<LocationCubit, LocationState>(
+                            builder: (context, state) {
+                          if (state is LocationAcessed) {
+                            return const SizedBox.shrink();
+                          }
+                          return TextButton(
+                            onPressed: () {},
+                            child: Text('Please all loction'),
+                          );
+                        }),
                         BlocBuilder<LocationCubit, LocationState>(
                           builder: (context, state) {
                             if (state is LocationAcessed) {
@@ -138,64 +150,83 @@ class ShowModalSheet extends StatelessWidget {
 
                             return ElevatedButton(
                               onPressed: () {
-                                FocusScope.of(context).unfocus();
-                                final isValid =
-                                    formKey.currentState!.validate();
-                                if (isValid &&
+                                if (formKey.currentState?.validate() == true &&
                                     context.read<CameraCubit>().state != null &&
-                                    state.toString().isNotEmpty) {
-                                  try {
-                                    // print('accessing');
-                                    if (state.toString().isNotEmpty) {
-                                      BlocProvider.of<LocationCubit>(context)
-                                          .getCurrentPosition();
-                                      //  final Location = context.read<LocationCubit>().getCurrentPosition();
-                                      //  print(Location);
-
-                                      final image =
-                                          BlocProvider.of<CameraCubit>(context)
-                                              .state;
-                                      print(image);
-                                      print("title ${titleController.text}");
-                                      print(
-                                          "desc ${descriptionController.text}");
-
-                                      //print(image! + 'cool');
-
-                                      // print('hi');
-                                      if (state is LocationDenied) {
-                                        // print('denied');
-                                      }
-                                    } else {
-                                      //print('error');
-                                    }
-                                  } catch (error) {
-                                    print('error');
-                                    //  showDialog(
-                                    //     context: context,
-                                    //     builder: (ctx) {
-                                    //       return AlertDialog(
-                                    //         title: const Text('Error'),
-                                    //         content:
-                                    //             const Text('Something went wrong'),
-                                    //         actions: <Widget>[
-                                    //           TextButton(
-                                    //             onPressed: () {
-                                    //               Navigator.pop(context);
-                                    //             },
-                                    //             child: const Text('Ok'),
-                                    //           ),
-                                    //         ],
-                                    //       );
-                                    //     });
-                                  }
+                                    context.read<LocationCubit>().state
+                                        is LocationAcessed) {
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Something went wrong'),
-                                    ),
-                                  );
+                                  if (formKey.currentState?.validate() ==
+                                      false) {
+                                    print('validation false');
+                                  } else if (context
+                                          .read<CameraCubit>()
+                                          .state ==
+                                      null) {
+                                    print('please pick image');
+                                  } else if (context.read<LocationCubit>().state
+                                      is! LocationAcessed) {
+                                    print('loction');
+                                  }
                                 }
+
+                                // FocusScope.of(context).unfocus();
+                                // final isValid =
+                                //     formKey.currentState!.validate();
+                                // if (isValid &&
+                                //     context.read<CameraCubit>().state != null &&
+                                //     state.toString().isNotEmpty) {
+                                //   try {
+                                //     // print('accessing');
+                                //     if (state.toString().isNotEmpty) {
+                                //       BlocProvider.of<LocationCubit>(context)
+                                //           .getCurrentPosition();
+                                //       //  final Location = context.read<LocationCubit>().getCurrentPosition();
+                                //       //  print(Location);
+
+                                //       final image =
+                                // BlocProvider.of<CameraCubit>(context)
+                                //     .state;
+                                //       print(image);
+                                //       print("title ${titleController.text}");
+                                //       print(
+                                //           "desc ${descriptionController.text}");
+
+                                //       //print(image! + 'cool');
+
+                                //       // print('hi');
+                                //       if (state is LocationDenied) {
+                                //         // print('denied');
+                                //       }
+                                //     } else {
+                                //       //print('error');
+                                //     }
+                                //   } catch (error) {
+                                //     print('error');
+                                //     //  showDialog(
+                                //     //     context: context,
+                                //     //     builder: (ctx) {
+                                //     //       return AlertDialog(
+                                //     //         title: const Text('Error'),
+                                //     //         content:
+                                //     //             const Text('Something went wrong'),
+                                //     //         actions: <Widget>[
+                                //     //           TextButton(
+                                //     //             onPressed: () {
+                                //     //               Navigator.pop(context);
+                                //     //             },
+                                //     //             child: const Text('Ok'),
+                                //     //           ),
+                                //     //         ],
+                                //     //       );
+                                //     //     });
+                                //   }
+                                // } else {
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     const SnackBar(
+                                //       content: Text('Something went wrong'),
+                                //     ),
+                                //   );
+                                // }
                               },
                               child: const Text('Submit'),
                             );

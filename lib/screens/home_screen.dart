@@ -6,22 +6,34 @@ import 'package:foodex/screens/modal_bottom_sheet.dart';
 
 import 'package:foodex/screens/sign_in_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<LocationCubit>().getCurrentPosition();
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    context.read<LocationCubit>().getCurrentPosition();
+    // context.read<LocationCubit>().getCurrentPosition();
 
     return Scaffold(
       appBar: AppBar(
-        title:  BlocListener<LocationCubit, LocationState>(
+        title: BlocListener<LocationCubit, LocationState>(
           listener: (context, state) {
-           if(state is LocationDenied){
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Turn on Location')));
-           }
+            if (state is LocationDenied) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Turn on Location')));
+            }
           },
           child: Text('Foodex'),
         ),
