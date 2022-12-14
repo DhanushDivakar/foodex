@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -177,21 +178,42 @@ class ShowModalSheet extends StatelessWidget {
                                       FirebaseStorage.instance;
                                   Reference ref =
                                       storage.ref().child('uploads/$fileName');
-                                  UploadTask uploadTask =
-                                      ref.putFile(File(image));
-                                  await uploadTask.whenComplete(() async {
-                                    await ref
-                                        .getDownloadURL()
-                                        .then((value) => print(value))
-                                        .onError((error, stackTrace) =>
-                                            print(error));
-                                  });
 
-                                  print(image);
+                                  ref.putFile(File(image));
+                                  final imageUrl = await ref.getDownloadURL();
+                                  print(imageUrl);
+
+                                  // await uploadTask.whenComplete(() async {
+                                  //   final String imageUrl =
+                                  //       await ref.getDownloadURL();
+                                  //   // print(url);
+                                  // });
+                                  // ignore: use_build_context_synchronously
                                   final location = context
                                       .read<LocationCubit>()
                                       .state
                                       .location;
+                                  final uid =
+                                      FirebaseAuth.instance.currentUser!.uid;
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(uid)
+                                      .set({
+                                    'uid': uid,
+                                    'image': imageUrl,
+                                    'title': titleController.text,
+                                    'description': descriptionController.text,
+                                    'locationCoords': GeoPoint(
+                                      location.latitude,
+                                      location.longitude,
+                                    ),
+                                    'time': DateTime.now(),
+                                    // 'latitude':location.latitude,
+                                    // 'logitude': location.longitude,
+                                  });
+                                  print(url);
+                                  // ignore: use_build_context_synchronously
+
                                   print(location.latitude);
                                   print(location.longitude);
                                   print(titleController.text);
