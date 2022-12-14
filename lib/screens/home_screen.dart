@@ -115,6 +115,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            Image.network(
+              'https://images.pexels.com/photos/14610789/pexels-photo-14610789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+              errorBuilder: (context, error, stackTrace) => Center(
+                child: CircularProgressIndicator(),
+              ),
+              loadingBuilder: (context, child, loadingProgress) => Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress?.cumulativeBytesLoaded.toDouble(),
+                ),
+              ),
+            )
           ],
         ),
       ),
