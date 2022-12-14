@@ -20,7 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<LocationCubit>().getCurrentPosition();
-    
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    print(uid);
   }
 
   @override

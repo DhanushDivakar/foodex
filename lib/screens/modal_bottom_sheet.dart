@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -208,7 +207,7 @@ class ShowModalSheet extends StatelessWidget {
                                       location.latitude,
                                       location.longitude,
                                     ),
-                                    
+
                                     // 'latitude':location.latitude,
                                     // 'logitude': location.longitude,
                                   });
@@ -219,25 +218,41 @@ class ShowModalSheet extends StatelessWidget {
                                   print(location.longitude);
                                   print(titleController.text);
                                   print(descriptionController.text);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(context);
 
                                   //   print()
                                   //print(formKey.currentState);
                                 } else {
                                   if (formKey.currentState?.validate() ==
                                       false) {
-                                    print('validation false');
+                                        showDialog(context: context, builder: (context){
+                                          return const Center(child: Text('fill the form'));
+                                        });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Enter title and description')));
                                   } else if (context
                                           .read<CameraCubit>()
                                           .state ==
                                       null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('please pick image')));
                                     print('please pick image');
                                   } else if (context
                                           .read<LocationCubit>()
                                           .state
                                           .permission !=
                                       LocationPermission.whileInUse) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(state.error!)));
+
                                     print('location not turned on');
                                   }
+                                  //Navigator.pop(context);
                                 }
 
                                 // FocusScope.of(context).unfocus();
@@ -298,7 +313,6 @@ class ShowModalSheet extends StatelessWidget {
                                 //     ),
                                 //   );
                                 // }
-                                Navigator.pop(context);
                               },
                               child: const Text('Submit'),
                             );
