@@ -1,43 +1,60 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 part 'location_state.dart';
 
 class LocationCubit extends Cubit<LocationState> {
-  LocationCubit() : super(LocationInitial());
+  LocationCubit() : super(const LocationState()) {
+    getCurrentPosition();
+  }
 
   void getCurrentPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
+    emit(state.copyWith(isLoading: true));
+
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     try {
       if (!serviceEnabled) {
-        emit(LocationDenied('not able to acess'));
+        emit(state.copyWith(
+            isLoading: false, error: 'service is not available!'));
+        //emit(LocationDenied('not able to acess'));
       }
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          emit(const LocationDenied('denied'));
+          emit(state.copyWith(
+              isLoading: false,
+              error: 'please turn on location',
+              permission: LocationPermission.denied));
         }
       } else if (permission == LocationPermission.deniedForever) {
-         await Geolocator.openLocationSettings();
-        emit(const LocationDenied('denied forever'));
+        emit(state.copyWith(
+            isLoading: false,
+            error: 'please turn on location',
+            permission: LocationPermission.deniedForever));
+
+        await Geolocator.openLocationSettings();
       }
       Position currenPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      print('lat' + currenPosition.latitude.toString());
-      print('log' + currenPosition.longitude.toString());
+      print('lat ${currenPosition.latitude}');
+      print('log ${currenPosition.longitude}');
       emit(
-        LocationAcessed(
-          currenPosition.latitude.toString(),
-          currenPosition.longitude.toString(),
+        state.copyWith(
+          isLoading: false,
+          permission: LocationPermission.whileInUse,
+          location: Location(
+            latitude: currenPosition.latitude,
+            longitude: currenPosition.longitude,
+          ),
         ),
       );
     } catch (error) {
-      emit(const LocationDenied('there was an error'));
+      emit(state.copyWith(isLoading: false));
     }
   }
 
@@ -60,5 +77,4 @@ class LocationCubit extends Cubit<LocationState> {
   //         emit(LocationAcessed(currenPosition.latitude.toString(), currenPosition.longitude.toString()));
   //   }
   // }
-
 }

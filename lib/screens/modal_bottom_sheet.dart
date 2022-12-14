@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/cubit/location_cubit.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../bloc/camera_bloc/camera_bloc_bloc.dart';
@@ -45,7 +46,7 @@ class ShowModalSheet extends StatelessWidget {
                                 BlocProvider.of<CameraCubit>(context);
                             if (state == null) {
                               const SnackBar(
-                                content: Text('Error'),
+                                content: Text('Error acessing camera'),
                               );
                               imageCubit.resetImage();
                             }
@@ -69,7 +70,7 @@ class ShowModalSheet extends StatelessWidget {
                                         .getImage(ImageSource.camera);
                                   },
                                   child: Text(
-                                    'Click a picture',
+                                    'Take a picture',
                                     style: TextStyle(
                                       fontSize: height * .025,
                                     ),
@@ -133,27 +134,46 @@ class ShowModalSheet extends StatelessWidget {
                         ),
                         BlocBuilder<LocationCubit, LocationState>(
                             builder: (context, state) {
-                          if (state is LocationAcessed) {
+                          if (state.permission ==
+                              LocationPermission.whileInUse) {
                             return const SizedBox.shrink();
                           }
                           return TextButton(
                             onPressed: () {},
-                            child: Text('Please all loction'),
+                            child: const Text('Please allow loction'),
                           );
                         }),
                         BlocBuilder<LocationCubit, LocationState>(
                           builder: (context, state) {
-                            if (state is LocationAcessed) {
-                              print(state.latitude);
-                              print(state.longitude);
+                            if (state.permission ==
+                                LocationPermission.whileInUse) {
+                              print(state.location.latitude);
+                              print(state.location.longitude);
                             }
 
                             return ElevatedButton(
                               onPressed: () {
                                 if (formKey.currentState?.validate() == true &&
                                     context.read<CameraCubit>().state != null &&
-                                    context.read<LocationCubit>().state
-                                        is LocationAcessed) {
+                                    context
+                                            .read<LocationCubit>()
+                                            .state
+                                            .permission ==
+                                        LocationPermission.whileInUse) {
+                                  final image =
+                                      context.read<CameraCubit>().state;
+                                  print(image);
+                                  final location = context
+                                      .read<LocationCubit>()
+                                      .state
+                                      .location;
+                                  print(location.latitude);
+                                  print(location.longitude);
+                                  print(titleController.text);
+                                  print(descriptionController.text);
+
+                                  //   print()
+                                  //print(formKey.currentState);
                                 } else {
                                   if (formKey.currentState?.validate() ==
                                       false) {
@@ -163,9 +183,12 @@ class ShowModalSheet extends StatelessWidget {
                                           .state ==
                                       null) {
                                     print('please pick image');
-                                  } else if (context.read<LocationCubit>().state
-                                      is! LocationAcessed) {
-                                    print('loction');
+                                  } else if (context
+                                          .read<LocationCubit>()
+                                          .state
+                                          .permission !=
+                                      LocationPermission.whileInUse) {
+                                    print('location not turned on');
                                   }
                                 }
 

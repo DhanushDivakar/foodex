@@ -5,6 +5,7 @@ import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:foodex/screens/modal_bottom_sheet.dart';
 
 import 'package:foodex/screens/sign_in_screen.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,12 +31,16 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: BlocListener<LocationCubit, LocationState>(
           listener: (context, state) {
-            if (state is LocationDenied) {
+            if (state.permission == LocationPermission.denied ||
+                state.permission == LocationPermission.deniedForever) {
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Turn on Location')));
+                const SnackBar(
+                  content: Text('Turn on Location'),
+                ),
+              );
             }
           },
-          child: Text('Foodex'),
+          child: const Text('Foodex'),
         ),
         actions: [
           TextButton(
