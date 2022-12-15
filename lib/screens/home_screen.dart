@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
+import 'package:foodex/bloc/cubit/get_data_cubit.dart';
+import 'package:foodex/bloc/cubit/get_data_state.dart';
 import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:foodex/screens/modal_bottom_sheet.dart';
 
@@ -29,6 +32,23 @@ class _HomeScreenState extends State<HomeScreen> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     // context.read<LocationCubit>().getCurrentPosition();
+
+//     QuerySnapshot querySnapshot;
+//     double lat = 0.0144927536231884;
+// double lon = 0.0181818181818182;
+// double distance = 1000*0.000621371;
+// var position = context.read<LocationCubit>().state.location;
+// double lowerLat = position.latitude - (lat * distance);
+// double lowerLon = position.longitude - (lon * distance);
+// double greaterLat = position.latitude + (lat * distance);
+// double greaterLon = position.longitude + (lon * distance);
+// GeoPoint lesserGeopoint = GeoPoint(lowerLat,lowerLon);
+// GeoPoint greaterGeopoint = GeoPoint(greaterLat,greaterLon);
+// querySnapshot =  FirebaseFirestore.instance.collection('user')
+//     .where("livelocation", isGreaterThan: lesserGeopoint)
+//     .where("livelocation", isLessThan: greaterGeopoint)
+//     .limit(100)
+//     .get();
 
     return Scaffold(
       appBar: AppBar(
@@ -115,6 +135,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
+              final Stream<QuerySnapshot> stream =
+      FirebaseFirestore.instance.collection('user').snapshots();
+              return StreamBuilder<QuerySnapshot>(
+                stream: stream,
+                builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
+                  final locPostion = context.read<LocationCubit>().state.location;
+                
+              });
+            }),
+
             // Image.network(
             //   'https://images.pexels.com/photos/14610789/pexels-photo-14610789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
             //   // errorBuilder: (context, error, stackTrace) => Center(
