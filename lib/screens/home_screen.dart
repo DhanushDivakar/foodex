@@ -22,9 +22,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    final position = context.read<LocationCubit>().state.location;
     context.read<LocationCubit>().getCurrentPosition();
-    final uid = FirebaseAuth.instance.currentUser!.uid;
-    print(uid);
+    // print(position.latitude);
+    context.read<GetDataCubit>().getFirestoreData(
+        Location(latitude: position.latitude, longitude: position.longitude));
+    //
+    // final uid = FirebaseAuth.instance.currentUser!.uid;
+    // print(uid);
   }
 
   @override
@@ -127,7 +132,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+               final data =  context.read<GetDataCubit>().state.getData;
+               print(data) ;
+              },
               child: Text(
                 'Add',
                 style: TextStyle(
@@ -136,14 +144,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
-              final Stream<QuerySnapshot> stream =
-      FirebaseFirestore.instance.collection('user').snapshots();
-              return StreamBuilder<QuerySnapshot>(
-                stream: stream,
-                builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshot) {
-                  final locPostion = context.read<LocationCubit>().state.location;
-                
-              });
+              // Location location = context.read<LocationCubit>().state.location;
+              //final data = context.read<GetDataCubit>().state.getData;
+              if (state.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: state.getData.length,
+                  itemBuilder: (context, index) {
+                    final data = state.getData[index];
+                    // print( data);
+                    print(data.description);
+                    print(data.title);
+                    return ListTile(
+                      //leading: Image.network(data.image),
+                      title: Text(data.title),
+
+                      subtitle: Text(data.description),
+                    );
+                  },
+                ),
+              );
+              // return ListTile(
+              //  title: state.getData ,
+              // );
             }),
 
             // Image.network(

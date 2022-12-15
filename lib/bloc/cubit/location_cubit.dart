@@ -41,8 +41,8 @@ class LocationCubit extends Cubit<LocationState> {
       }
       Position currenPosition = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      print('lat ${currenPosition.latitude}');
-      print('log ${currenPosition.longitude}');
+      //print('lat ${currenPosition.latitude}');
+      //print('log ${currenPosition.longitude}');
       emit(
         state.copyWith(
           isLoading: false,

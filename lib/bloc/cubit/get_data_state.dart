@@ -15,14 +15,14 @@ class GetData {
 }
 
 class GetDataState extends Equatable {
-  final GetData getData;
+  final List<GetData> getData;
   final bool isLoading;
   final String? error;
   const GetDataState(
-      {this.isLoading = false, this.error, this.getData = const GetData()});
+      {this.isLoading = false, this.error, this.getData = const []});
 
   GetDataState copyWith({
-    GetData? getData,
+    List<GetData>? getData,
     bool? isLoading,
     String? error,
   }) =>

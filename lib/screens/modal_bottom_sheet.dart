@@ -153,14 +153,13 @@ class ShowModalSheet extends StatelessWidget {
                             //  // print(state.location.latitude);
                             //   print(state.location.longitude);
                             // }
-
+                            if (state.isLoading) {
+                              const Center(child: CircularProgressIndicator());
+                            }
                             return ElevatedButton(
                               onPressed: () async {
                                 FocusScope.of(context).unfocus();
-                                if (state.isLoading) {
-                                  const Center(
-                                      child: CircularProgressIndicator());
-                                }
+
                                 if (formKey.currentState?.validate() == true &&
                                     context.read<CameraCubit>().state != null &&
                                     context
@@ -220,14 +219,21 @@ class ShowModalSheet extends StatelessWidget {
                                   print(descriptionController.text);
                                   // ignore: use_build_context_synchronously
                                   Navigator.pop(context);
+                                  //resetImage
+                                  // ignore: use_build_context_synchronously
+                                  context.read<CameraCubit>().resetImage();
+
 
                                   //   print()
                                   //print(formKey.currentState);
                                 } else {
                                   if (formKey.currentState?.validate() ==
                                       false) {
-                                        showDialog(context: context, builder: (context){
-                                          return const Center(child: Text('fill the form'));
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return const Center(
+                                              child: Text('fill the form'));
                                         });
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
