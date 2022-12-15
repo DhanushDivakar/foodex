@@ -8,6 +8,7 @@ import 'package:foodex/bloc/cubit/location_cubit.dart';
 import 'package:foodex/screens/modal_bottom_sheet.dart';
 
 import 'package:foodex/screens/sign_in_screen.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,6 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     final position = context.read<LocationCubit>().state.location;
+    // final geo = Geoflutterfire();
+    // GeoFirePoint mylocation =
+    //     geo.point(latitude: position.latitude, longitude: position.longitude);
+    // var collectionRef = FirebaseFirestore.instance.collection('user');
+    // double radius = 10;
+    // String field = 'locationCoords';
+    // Stream<List<DocumentSnapshot>> stream = geo
+    //     .collection(collectionRef: collectionRef)
+    //     .within(center: mylocation, radius: radius, field: field, strictMode: true);
+
     context.read<LocationCubit>().getCurrentPosition();
     // print(position.latitude);
     context.read<GetDataCubit>().getFirestoreData(
@@ -33,23 +44,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //final positionn = context.read<LocationCubit>().state.location;
+    // GeoFirePoint(position.latitude, position.longitude);
+
+    //final _firestore = FirebaseFirestore.instance;
+    final position = context.read<LocationCubit>().state.location;
+    final geo = Geoflutterfire();
+    GeoFirePoint mylocation =
+        geo.point(latitude: position.latitude, longitude: position.longitude);
+    var collectionRef = FirebaseFirestore.instance.collection('user');
+    double radius = 10;
+    String field = 'locationCoords';
+    Stream<List<DocumentSnapshot>> stream = geo
+        .collection(collectionRef: collectionRef)
+        .within(
+            center: mylocation, radius: radius, field: field, strictMode: true);
+
+    print('hiii');
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-     final pos = context.read<LocationCubit>().state.location;
-     final lati = pos.latitude;
-     final long = pos.longitude;
+    //  final pos = context.read<LocationCubit>().state.location;
+    //  final lati = pos.latitude;
+    //  final long = pos.longitude;
 
-   
-    double lat = 0.0144927536231884;
-    double lon = 0.0181818181818182;
-    double distance = 1000 * 0.000621371;
-    var position = context.read<LocationCubit>().state.location;
-    double lowerLat = position.latitude - (lat * distance);
-    double lowerLon = position.longitude - (lon * distance);
-    double greaterLat = position.latitude + (lat * distance);
-    double greaterLon = position.longitude + (lon * distance);
-    GeoPoint lesserGeopoint = GeoPoint(lowerLat, lowerLon);
-    GeoPoint greaterGeopoint = GeoPoint(greaterLat, greaterLon);
+    // double lat = 0.0144927536231884;
+    // double lon = 0.0181818181818182;
+    // double distance = 1000 * 0.000621371;
+    // var position = context.read<LocationCubit>().state.location;
+    // double lowerLat = position.latitude - (lat * distance);
+    // double lowerLon = position.longitude - (lon * distance);
+    // double greaterLat = position.latitude + (lat * distance);
+    // double greaterLon = position.longitude + (lon * distance);
+    // GeoPoint lesserGeopoint = GeoPoint(lowerLat, lowerLon);
+    // GeoPoint greaterGeopoint = GeoPoint(greaterLat, greaterLon);
 // querySnapshot =  FirebaseFirestore.instance.collection('user')
 //     .where("livelocation", isGreaterThan: lesserGeopoint)
 //     .where("livelocation", isLessThan: greaterGeopoint)
@@ -145,50 +172,63 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             StreamBuilder(
-              stream: FirebaseFirestore.instance.collection('user').snapshots(),
+              stream: geo.collection(collectionRef: collectionRef).within(
+                  center: mylocation,
+                  radius: radius,
+                  field: field,
+                  strictMode: true),
+                 
+              //       stream:FirebaseFirestore.instance.collection('user').collection(collectionRef: collectionRef)
+              // .within(center: mylocation, radius: radius, field: field, strictMode: true),
               builder: (context, snapshot) {
-                final data = snapshot.data?.docs ?? [];
+                final data = snapshot.data ?? [];
+                print('nnh');
+                print([]);
+                 
                 return Expanded(
                   child: ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
+                      print(data[index]['title']);
+                     
+                      print('object');
                       return ListTile(
-                        title: Text(data[index]['title']),
+                        title: Text(data[index]['time']),
                       );
                     },
                   ),
                 );
               },
             ),
-            BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
-              // Location location = context.read<LocationCubit>().state.location;
-              //final data = context.read<GetDataCubit>().state.getData;
-              if (state.isLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return Expanded(
-                child: ListView.builder(
-                  itemCount: state.getData.length,
-                  itemBuilder: (context, index) {
-                    final data = state.getData[index];
-                    // print( data);
-                    print(data.description);
-                    print(data.title);
-                    return ListTile(
-                      //leading: Image.network(data.image),
-                      title: Text(data.title),
+            // BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
+            //   // Location location = context.read<LocationCubit>().state.location;
+            //   //final data = context.read<GetDataCubit>().state.getData;
+            //   if (state.isLoading) {
+            //     return const Center(
+            //       child: CircularProgressIndicator(),
+            //     );
+            //   }
+            //   return Expanded(
+            //     child: ListView.builder(
+            //       itemCount: state.getData.length,
+            //       itemBuilder: (context, index) {
+            //         final data = state.getData[index];
+            //         // print( data);
+            //         print(data.description);
+            //         print(data.title);
+            //         return ListTile(
+            //           //leading: Image.network(data.image),
+            //           title: Text(data.title),
 
-                      subtitle: Text(data.description),
-                    );
-                  },
-                ),
-              );
-              // return ListTile(
-              //  title: state.getData ,
-              // );
-            }),
+            //           subtitle: Text(data.description),
+            //         );
+            //       },
+            //     ),
+            //   );
+            //   // return ListTile(
+            //   //  title: state.getData ,
+            //   // );
+            // }),
 
             // Image.network(
             //   'https://images.pexels.com/photos/14610789/pexels-photo-14610789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',

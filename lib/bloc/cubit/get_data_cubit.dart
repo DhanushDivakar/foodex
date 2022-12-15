@@ -7,12 +7,22 @@ import 'package:geoflutterfire/geoflutterfire.dart';
 class GetDataCubit extends Cubit<GetDataState> {
   GetDataCubit() : super(const GetDataState());
 
+  void getFireData(Location position) async {
+    final geo = Geoflutterfire();
+    GeoFirePoint mylocation = geo.point(
+        latitude: position.latitude,
+        longitude: position
+            .longitude); // GeoFirePoint(position.latitude, position.longitude);
+    var collectionRef = FirebaseFirestore.instance.collection('user');
+    double radius = 10;
+    String field = 'locationCoords';
 
-  // void getFireData(Location position) async{
-  //   GeoFirePoint mylocation = GeoFirePoint(position.latitude, position.longitude);
-  //   FirebaseFirestore.instance.collection('user')
-    
-  // }
+    final _firestore = FirebaseFirestore.instance;
+
+    Stream<List<DocumentSnapshot>> stream = geo
+        .collection(collectionRef: collectionRef)
+        .within(center: mylocation, radius: radius, field: field);
+  }
 
   void getFirestoreData(Location position) async {
     emit(state.copyWith(isLoading: true));

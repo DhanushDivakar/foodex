@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/cubit/location_cubit.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
@@ -17,6 +18,7 @@ class ShowModalSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final geo = Geoflutterfire();
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     TextEditingController titleController = TextEditingController();
@@ -195,14 +197,14 @@ class ShowModalSheet extends StatelessWidget {
                                       FirebaseAuth.instance.currentUser!.uid;
                                   await FirebaseFirestore.instance
                                       .collection('user')
-                                      .doc(uid)
-                                      .set({
+                                      .add({
                                     'uid': uid,
                                     'image': imageUrl,
                                     'title': titleController.text,
                                     'description': descriptionController.text,
                                     'time': DateTime.now(),
-                                    'locationCoords': GeoPoint(
+                                    'locationCoords': //geo.point(latitude: location.latitude, longitude: location.longitude)
+                                     GeoPoint(
                                       location.latitude,
                                       location.longitude,
                                     ),
@@ -222,7 +224,6 @@ class ShowModalSheet extends StatelessWidget {
                                   //resetImage
                                   // ignore: use_build_context_synchronously
                                   context.read<CameraCubit>().resetImage();
-
 
                                   //   print()
                                   //print(formKey.currentState);

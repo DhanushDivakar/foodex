@@ -29,23 +29,23 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  cloud_firestore: 
-  cupertino_icons: 
-  equatable: 
-  firebase_auth: 
-  firebase_core: 
-  firebase_storage: 
+  cloud_firestore: ^3.1.6
+  cupertino_icons: ^1.0.5
+  equatable: ^2.0.5
+  firebase_auth: any
+  firebase_core: any
+  firebase_storage: any
   flutter:
     sdk: flutter
-  flutter_bloc: 
-  geoflutterfire: 
-  geolocator: 
-  hydrated_bloc: 
-  image_picker: 
-  path: null
+  flutter_bloc: ^8.1.1
+  geoflutterfire: ^3.0.3
+  geolocator: ^9.0.2
+  hydrated_bloc: ^9.0.0
+  image_picker: ^0.8.6
+  path: 
 
 dev_dependencies:
-  flutter_lints:
+  flutter_lints: null
   flutter_test:
     sdk: flutter
 
@@ -84,3 +84,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+dependency_overrides:
+  firebase_core_platform_interface: 4.5.1
