@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
             //   // ),
             //   loadingBuilder: (context, child, loadingProgress) => Center(
             //     child: Text('Loading')
-                
+
             //   ),
             // )
           ],
