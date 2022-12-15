@@ -2,10 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/cubit/get_data_state.dart';
 import 'package:foodex/bloc/cubit/location_cubit.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 
 class GetDataCubit extends Cubit<GetDataState> {
   GetDataCubit() : super(const GetDataState());
-  
+
+
+  // void getFireData(Location position) async{
+  //   GeoFirePoint mylocation = GeoFirePoint(position.latitude, position.longitude);
+  //   FirebaseFirestore.instance.collection('user')
+    
+  // }
 
   void getFirestoreData(Location position) async {
     emit(state.copyWith(isLoading: true));
@@ -16,7 +23,7 @@ class GetDataCubit extends Cubit<GetDataState> {
     double lowerLon = position.longitude - (lon * distance);
     double greaterLat = position.latitude + (lat * distance);
     double greaterLon = position.longitude + (lon * distance);
-   // print(greaterLat);
+    // print(greaterLat);
     GeoPoint lesserGeopoint = GeoPoint(lowerLat, lowerLon);
     GeoPoint greaterGeopoint = GeoPoint(greaterLat, greaterLon);
     var data = await FirebaseFirestore.instance
@@ -43,6 +50,5 @@ class GetDataCubit extends Cubit<GetDataState> {
     emit(
       state.copyWith(isLoading: false, getData: firedata, error: 'error'),
     );
-   
   }
 }

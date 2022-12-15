@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:foodex/bloc/auth_cubit.dart';
@@ -36,19 +35,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    // context.read<LocationCubit>().getCurrentPosition();
+     final pos = context.read<LocationCubit>().state.location;
+     final lati = pos.latitude;
+     final long = pos.longitude;
 
-//     QuerySnapshot querySnapshot;
-//     double lat = 0.0144927536231884;
-// double lon = 0.0181818181818182;
-// double distance = 1000*0.000621371;
-// var position = context.read<LocationCubit>().state.location;
-// double lowerLat = position.latitude - (lat * distance);
-// double lowerLon = position.longitude - (lon * distance);
-// double greaterLat = position.latitude + (lat * distance);
-// double greaterLon = position.longitude + (lon * distance);
-// GeoPoint lesserGeopoint = GeoPoint(lowerLat,lowerLon);
-// GeoPoint greaterGeopoint = GeoPoint(greaterLat,greaterLon);
+   
+    double lat = 0.0144927536231884;
+    double lon = 0.0181818181818182;
+    double distance = 1000 * 0.000621371;
+    var position = context.read<LocationCubit>().state.location;
+    double lowerLat = position.latitude - (lat * distance);
+    double lowerLon = position.longitude - (lon * distance);
+    double greaterLat = position.latitude + (lat * distance);
+    double greaterLon = position.longitude + (lon * distance);
+    GeoPoint lesserGeopoint = GeoPoint(lowerLat, lowerLon);
+    GeoPoint greaterGeopoint = GeoPoint(greaterLat, greaterLon);
 // querySnapshot =  FirebaseFirestore.instance.collection('user')
 //     .where("livelocation", isGreaterThan: lesserGeopoint)
 //     .where("livelocation", isLessThan: greaterGeopoint)
@@ -133,8 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextButton(
               onPressed: () {
-               final data =  context.read<GetDataCubit>().state.getData;
-               print(data) ;
+                final data = context.read<GetDataCubit>().state.getData;
+                print(data);
               },
               child: Text(
                 'Add',
@@ -142,6 +143,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: height * .030,
                 ),
               ),
+            ),
+            StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('user').snapshots(),
+              builder: (context, snapshot) {
+                final data = snapshot.data?.docs ?? [];
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(data[index]['title']),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
             BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
               // Location location = context.read<LocationCubit>().state.location;
