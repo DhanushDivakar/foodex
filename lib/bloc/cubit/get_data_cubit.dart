@@ -28,7 +28,7 @@ class GetDataCubit extends Cubit<GetDataState> {
     emit(state.copyWith(isLoading: true));
     double lat = 0.0144927536231884;
     double lon = 0.0181818181818182;
-    double distance = 1000 * 0.000621371 *20;
+    double distance = 1000 * 0.000621371 ;
     double lowerLat = position.latitude - (lat * distance);
     double lowerLon = position.longitude - (lon * distance);
     double greaterLat = position.latitude + (lat * distance);
@@ -56,8 +56,8 @@ class GetDataCubit extends Cubit<GetDataState> {
 
     data.docs;
 
-    //print(firedata);
-    //print(data.docs);
+    print(firedata);
+    print(data.docs);
 
     emit(
       state.copyWith(isLoading: false, getData: firedata, error: 'error'),

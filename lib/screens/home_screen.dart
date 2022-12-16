@@ -261,40 +261,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            // BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
-            //   // Location location = context.read<LocationCubit>().state.location;
-            //   //final data = context.read<GetDataCubit>().state.getData;
-            //   if (state.isLoading) {
-            //     return const Center(
-            //       child: CircularProgressIndicator(),
-            //     );
-            //   }
-            //   // if (state.error == null) {
-            //   //   print('error');
-            //   // }
-            //   return Expanded(
-            //     child: ListView.builder(
-            //       itemCount: state.getData.length,
-            //       itemBuilder: (context, index) {
-            //         final data = state.getData[0];
-            //         // print( data);
-            //         print(data.description);
-            //         print(data.title);
-            //         return ListTile(
-            //           //leading: Image.network(data.image),
-            //           title: Text(
-            //             data.title,
-            //             style: const TextStyle(color: Colors.black),
-            //           ),
-            //           subtitle: Text(data.description),
-            //         );
-            //       },
-            //     ),
-            //   );
-            //   // return ListTile(
-            //   //  title: state.getData ,
-            //   // );
-            // }),
+            BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
+              // Location location = context.read<LocationCubit>().state.location;
+              //final data = context.read<GetDataCubit>().state.getData;
+              if (state.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              // if (state.error == null) {
+              //   print('error');
+              // }
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: state.getData.length,
+                  itemBuilder: (context, index) {
+                    final data = state.getData[0];
+                    // print( data);
+                    print(data.description);
+                    print(data.title);
+                    return ListTile(
+                      //leading: Image.network(data.image),
+                      title: Text(
+                        data.title,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(data.description),
+                    );
+                  },
+                ),
+              );
+              // return ListTile(
+              //  title: state.getData ,
+              // );
+            }),
 
             // Image.network(
             //   'https://images.pexels.com/photos/14610789/pexels-photo-14610789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
