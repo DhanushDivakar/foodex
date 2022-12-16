@@ -22,23 +22,42 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     final position = context.read<LocationCubit>().state.location;
     final geo = Geoflutterfire();
     GeoFirePoint mylocation =
         geo.point(latitude: position.latitude, longitude: position.longitude);
     var collectionRef = FirebaseFirestore.instance.collection('user');
-    double radius = 10;
+    double radius = 1;
     String field = 'locationCoords';
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionRef)
         .within(
             center: mylocation, radius: radius, field: field, strictMode: true);
+    // List<Location> polyLinesLatLongs ;
+    //   FirebaseFirestore.instance.collection('user').get().then((value) {
+    //   var firebase = value.docs;
+    //   for(var i =1; i<firebase.length; i++){
+    //     GeoPoint point = firebase[i]['locationCoords']['geopoint'];
+    //   //  polyLinesLatLongs.add(Location(latitude: ));
+
+    //   }
+
+    // });
+    // stream.listen((List<DocumentSnapshot> documentList) {
+    //   // print(stream.length);
+    //   print('Here');
+    //   print(documentList.isEmpty);
+    // });
 
     // context.read<LocationCubit>().getCurrentPosition();
     // print(position.latitude);
     context.read<GetDataCubit>().getFirestoreData(
         Location(latitude: position.latitude, longitude: position.longitude));
-    //
+    var snap =
+        FirebaseFirestore.instance.collection('user').doc('a').snapshots();
+    print(snap);
+
     // final uid = FirebaseAuth.instance.currentUser!.uid;
     // print(uid);
   }
@@ -197,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       // print(data[index]['title']);
 
                       // print('object');
+
                       return ListTile(
                         leading: SizedBox(
                           height: 50,
@@ -211,6 +231,31 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         subtitle: Text(data[index]['description']),
                       );
+                    },
+                  ),
+                );
+              },
+            ),
+            StreamBuilder(
+              stream:
+                  FirebaseFirestore.instance.collection('location').snapshots(),
+              builder: (context, snapshot) {
+                final data = snapshot.data?.docs ?? [];
+
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      double distanceInMeters = Geolocator.distanceBetween(
+                          position.latitude,
+                          position.longitude,
+                         double.parse(data[index]['latitude']) ,
+                          double.parse(data[index]['longitude']));
+                      print(distanceInMeters);
+                      //13.1673192
+                      //77.6358929
+
+                      return Text(data[index]['latitude']);
                     },
                   ),
                 );
