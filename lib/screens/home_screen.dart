@@ -23,17 +23,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     final position = context.read<LocationCubit>().state.location;
-    // final geo = Geoflutterfire();
-    // GeoFirePoint mylocation =
-    //     geo.point(latitude: position.latitude, longitude: position.longitude);
-    // var collectionRef = FirebaseFirestore.instance.collection('user');
-    // double radius = 10;
-    // String field = 'locationCoords';
-    // Stream<List<DocumentSnapshot>> stream = geo
-    //     .collection(collectionRef: collectionRef)
-    //     .within(center: mylocation, radius: radius, field: field, strictMode: true);
+    final geo = Geoflutterfire();
+    GeoFirePoint mylocation =
+        geo.point(latitude: position.latitude, longitude: position.longitude);
+    var collectionRef = FirebaseFirestore.instance.collection('user');
+    double radius = 10;
+    String field = 'locationCoords';
+    Stream<List<DocumentSnapshot>> stream = geo
+        .collection(collectionRef: collectionRef)
+        .within(
+            center: mylocation, radius: radius, field: field, strictMode: true);
 
-    context.read<LocationCubit>().getCurrentPosition();
+    // context.read<LocationCubit>().getCurrentPosition();
     // print(position.latitude);
     context.read<GetDataCubit>().getFirestoreData(
         Location(latitude: position.latitude, longitude: position.longitude));
@@ -52,28 +53,32 @@ class _HomeScreenState extends State<HomeScreen> {
     final geo = Geoflutterfire();
     GeoFirePoint mylocation =
         geo.point(latitude: position.latitude, longitude: position.longitude);
+
+    context.read<GetDataCubit>().getFirestoreData(position);
     var collectionRef = FirebaseFirestore.instance.collection('user');
-    double radius = 10;
+    double radius = 1000;
     String field = 'locationCoords';
     Stream<List<DocumentSnapshot>> stream = geo
         .collection(collectionRef: collectionRef)
         .within(
             center: mylocation, radius: radius, field: field, strictMode: true);
 
-    getNearData() async {
-      GeoFirePoint point = Geoflutterfire()
-          .point(latitude: position.latitude, longitude: position.longitude);
-      //double distance = 30;
-      Stream<List<DocumentSnapshot>> streamm = geo
-          .collection(collectionRef: collectionRef)
-          .within(center: point, radius: radius, field: field);
-      streamm.listen((List<DocumentSnapshot> documentList) {
-        // print(stream.length);
-        print('Here');
-        print(documentList[0].data());
-      }).toString();
-    
-    }
+    GeoFirePoint point = Geoflutterfire()
+        .point(latitude: position.latitude, longitude: position.longitude);
+    //double distance = 30;
+    Stream<List<DocumentSnapshot>> streamm = geo
+        .collection(collectionRef: collectionRef)
+        .within(center: point, radius: radius, field: field);
+    streamm.listen((List<DocumentSnapshot> documentList) {
+      //print(stream.length);
+      if (documentList.isEmpty) {
+        //print('empty');
+
+        /// print(documentList[0].data());
+      }
+      //print('Here');
+      // print(documentList[1].data());
+    });
 
 //     List Data = [];
 
@@ -101,11 +106,10 @@ class _HomeScreenState extends State<HomeScreen> {
 //     .get().then((QuerySnapshot value) {
 //       value.docs.forEach((element) {
 //         return Data.add(element.data());
-        
+
 //       });
 //     });
 //     print(Data);
-    
 
     return Scaffold(
       appBar: AppBar(
@@ -177,32 +181,35 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             StreamBuilder(
-              stream: geo
-                  .collection(
-                      collectionRef:
-                          FirebaseFirestore.instance.collection('user'))
-                  .within(
-                      center: mylocation,
-                      radius: radius,
-                      field: field,
-                      strictMode: true),
+              stream: FirebaseFirestore.instance.collection('user').snapshots(),
 
               //       stream:FirebaseFirestore.instance.collection('user').collection(collectionRef: collectionRef)
               // .within(center: mylocation, radius: radius, field: field, strictMode: true),
               builder: (context, snapshot) {
-                final data = snapshot.data ?? [];
-                print('nnh');
-                print(data);
+                final data = snapshot.data?.docs ?? [];
+                // print('nnh');
+                // print(data);
 
                 return Expanded(
                   child: ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
-                      print(data[index]['title']);
+                     // print(data[index]['title']);
 
-                      print('object');
+                     // print('object');
                       return ListTile(
-                        title: Text(data[index]['time']),
+                        leading: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: Image.network(
+                            data[index]['image'],
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        title: Text(
+                          data[index]['title'],
+                        ),
+                        subtitle: Text(data[index]['description']),
                       );
                     },
                   ),
@@ -217,9 +224,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CircularProgressIndicator(),
                 );
               }
-              if (state.error == null) {
-                print('error');
-              }
+              // if (state.error == null) {
+              //   print('error');
+              // }
               return Expanded(
                 child: ListView.builder(
                   itemCount: state.getData.length,
@@ -230,7 +237,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     print(data.title);
                     return ListTile(
                       //leading: Image.network(data.image),
-                      title: Text(data.title),
+                      title: Text(
+                        data.title,
+                        style: TextStyle(color: Colors.black),
+                      ),
 
                       subtitle: Text(data.description),
                     );
