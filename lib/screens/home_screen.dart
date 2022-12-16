@@ -60,28 +60,52 @@ class _HomeScreenState extends State<HomeScreen> {
         .within(
             center: mylocation, radius: radius, field: field, strictMode: true);
 
-    print('hiii');
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
-    //  final pos = context.read<LocationCubit>().state.location;
-    //  final lati = pos.latitude;
-    //  final long = pos.longitude;
+    getNearData() async {
+      GeoFirePoint point = Geoflutterfire()
+          .point(latitude: position.latitude, longitude: position.longitude);
+      //double distance = 30;
+      Stream<List<DocumentSnapshot>> streamm = geo
+          .collection(collectionRef: collectionRef)
+          .within(center: point, radius: radius, field: field);
+      streamm.listen((List<DocumentSnapshot> documentList) {
+        // print(stream.length);
+        print('Here');
+        print(documentList[0].data());
+      }).toString();
+    
+    }
 
-    // double lat = 0.0144927536231884;
-    // double lon = 0.0181818181818182;
-    // double distance = 1000 * 0.000621371;
-    // var position = context.read<LocationCubit>().state.location;
-    // double lowerLat = position.latitude - (lat * distance);
-    // double lowerLon = position.longitude - (lon * distance);
-    // double greaterLat = position.latitude + (lat * distance);
-    // double greaterLon = position.longitude + (lon * distance);
-    // GeoPoint lesserGeopoint = GeoPoint(lowerLat, lowerLon);
-    // GeoPoint greaterGeopoint = GeoPoint(greaterLat, greaterLon);
-// querySnapshot =  FirebaseFirestore.instance.collection('user')
-//     .where("livelocation", isGreaterThan: lesserGeopoint)
-//     .where("livelocation", isLessThan: greaterGeopoint)
+//     List Data = [];
+
+//     print('hiii');
+//     final height = MediaQuery.of(context).size.height;
+//     final width = MediaQuery.of(context).size.width;
+//      final pos = context.read<LocationCubit>().state.location;
+//      final lati = pos.latitude;
+//      final long = pos.longitude;
+
+//     double lat = 0.0144927536231884;
+//     double lon = 0.0181818181818182;
+//     double distance = 1000 * 0.000621371;
+//    // var position = context.read<LocationCubit>().state.location;
+//     double lowerLat = position.latitude - (lat * distance);
+//     double lowerLon = position.longitude - (lon * distance);
+//     double greaterLat = position.latitude + (lat * distance);
+//     double greaterLon = position.longitude + (lon * distance);
+//     GeoPoint lesserGeopoint = GeoPoint(lowerLat, lowerLon);
+//     GeoPoint greaterGeopoint = GeoPoint(greaterLat, greaterLon);
+//  var querySnapshot =  FirebaseFirestore.instance.collection('user')
+//     .where("locationCoords", isGreaterThan: lesserGeopoint)
+//     .where("locationCoords", isLessThan: greaterGeopoint)
 //     .limit(100)
-//     .get();
+//     .get().then((QuerySnapshot value) {
+//       value.docs.forEach((element) {
+//         return Data.add(element.data());
+        
+//       });
+//     });
+//     print(Data);
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -152,45 +176,30 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Center(
         child: Column(
           children: [
-            Text(
-              'Nothing yet',
-              style: TextStyle(
-                fontSize: height * .040,
-                color: Colors.black,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                final data = context.read<GetDataCubit>().state.getData;
-                print(data);
-              },
-              child: Text(
-                'Add',
-                style: TextStyle(
-                  fontSize: height * .030,
-                ),
-              ),
-            ),
             StreamBuilder(
-              stream: geo.collection(collectionRef: collectionRef).within(
-                  center: mylocation,
-                  radius: radius,
-                  field: field,
-                  strictMode: true),
-                 
+              stream: geo
+                  .collection(
+                      collectionRef:
+                          FirebaseFirestore.instance.collection('user'))
+                  .within(
+                      center: mylocation,
+                      radius: radius,
+                      field: field,
+                      strictMode: true),
+
               //       stream:FirebaseFirestore.instance.collection('user').collection(collectionRef: collectionRef)
               // .within(center: mylocation, radius: radius, field: field, strictMode: true),
               builder: (context, snapshot) {
                 final data = snapshot.data ?? [];
                 print('nnh');
-                print([]);
-                 
+                print(data);
+
                 return Expanded(
                   child: ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       print(data[index]['title']);
-                     
+
                       print('object');
                       return ListTile(
                         title: Text(data[index]['time']),
@@ -200,35 +209,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            // BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
-            //   // Location location = context.read<LocationCubit>().state.location;
-            //   //final data = context.read<GetDataCubit>().state.getData;
-            //   if (state.isLoading) {
-            //     return const Center(
-            //       child: CircularProgressIndicator(),
-            //     );
-            //   }
-            //   return Expanded(
-            //     child: ListView.builder(
-            //       itemCount: state.getData.length,
-            //       itemBuilder: (context, index) {
-            //         final data = state.getData[index];
-            //         // print( data);
-            //         print(data.description);
-            //         print(data.title);
-            //         return ListTile(
-            //           //leading: Image.network(data.image),
-            //           title: Text(data.title),
+            BlocBuilder<GetDataCubit, GetDataState>(builder: (context, state) {
+              // Location location = context.read<LocationCubit>().state.location;
+              //final data = context.read<GetDataCubit>().state.getData;
+              if (state.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (state.error == null) {
+                print('error');
+              }
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: state.getData.length,
+                  itemBuilder: (context, index) {
+                    final data = state.getData[index];
+                    // print( data);
+                    print(data.description);
+                    print(data.title);
+                    return ListTile(
+                      //leading: Image.network(data.image),
+                      title: Text(data.title),
 
-            //           subtitle: Text(data.description),
-            //         );
-            //       },
-            //     ),
-            //   );
-            //   // return ListTile(
-            //   //  title: state.getData ,
-            //   // );
-            // }),
+                      subtitle: Text(data.description),
+                    );
+                  },
+                ),
+              );
+              // return ListTile(
+              //  title: state.getData ,
+              // );
+            }),
 
             // Image.network(
             //   'https://images.pexels.com/photos/14610789/pexels-photo-14610789.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
