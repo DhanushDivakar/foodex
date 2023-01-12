@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
       //               },
       //               child: const Text('Camera'),
       //             ),
-//hjd
+
       //             ElevatedButton(
       //               onPressed: () {
       //                 BlocProvider.of<CameraCubit>(context)
